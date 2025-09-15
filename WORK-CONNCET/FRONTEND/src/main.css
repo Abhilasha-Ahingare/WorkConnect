@@ -1,0 +1,23 @@
+/* Toast container styles */
+.Toastify__toast-container {
+  width: 320px;
+}
+
+/* Toast styling */
+.Toastify__toast {
+  background-color: #d4c7c7 !important;
+  color: rgb(56, 4, 4) !important;
+  font-size: 1.1rem !important;
+}
+
+/* Toast body styling */
+.toastBody {
+  font-family: Arial, sans-serif !important;
+  font-size: 16px !important;
+  padding: 10px !important;
+}
+
+/* Progress bar styling */
+.Toastify__progress-bar {
+  background-color: #0f0f0f !important;
+}

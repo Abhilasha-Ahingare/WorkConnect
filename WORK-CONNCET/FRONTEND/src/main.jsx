@@ -3,19 +3,22 @@ import { createRoot } from "react-dom/client";
 import App from "./App.jsx";
 import "./main.css";
 import "./index.css";
+import "react-toastify/dist/ReactToastify.css";
 
 import { BrowserRouter } from "react-router-dom";
-import { NotificationProvider } from "./contexts/NotificationBox.jsx";
+import { NotificationProvider } from "./contexts/NotificationContext.jsx";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ToastContainer } from "react-toastify";
 
 createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <BrowserRouter>
+    <BrowserRouter
+      future={{ v7_startTransition: true, v7_relativeSplatPath: true }}
+    >
       <AuthProvider>
         <NotificationProvider>
           <App />
-          <ToastContainer
+          {/* <ToastContainer
             position="top-right"
             autoClose={2000}
             hideProgressBar={false}
@@ -30,7 +33,8 @@ createRoot(document.getElementById("root")).render(
             toastClassName="toast-item"
             bodyClassName="toastBody"
             transition={Bounce}
-          />
+          />{" "}
+          */}
         </NotificationProvider>
       </AuthProvider>
     </BrowserRouter>

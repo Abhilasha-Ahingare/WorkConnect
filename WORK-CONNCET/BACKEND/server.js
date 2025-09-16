@@ -35,7 +35,13 @@ app.use("/api/task", taskRoutes);
 app.get("/", (req, res) => res.json({ ok: true }));
 
 const server = http.createServer(app);
-const io = new IOServer(server, { cors: { origin: "*" } });
+const io = new IOServer(server, {
+  cors: {
+    origin: process.env.FRONTEND_URL || "http://localhost:5173",
+    methods: ["GET", "POST"],
+    credentials: true,
+  },
+});
 
 // map userId -> socketId (string keys)
 const onlineUsers = new Map();

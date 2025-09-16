@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
-import { UserAuth } from "../contexts/AuthContext";
-import api from "../api/api";
+import { UserAuth } from "../../contexts/AuthContext";
+import api from "../../api/api";
 
 const Register = () => {
   const [Email, setEmail] = useState("");
@@ -25,20 +25,25 @@ const Register = () => {
         Password,
         role,
       });
+
       if (response.status === 201 && response.data) {
-        const { token, user } = response.data;
-        if (token) {
-          localStorage.setItem("token", token);
-        }
-        if (setUser) setUser(user);
-        alert("Registration successful & logged in!");
+        toast.success("Registration successful! Please login to continue.");
+        // Since we're asking them to login, we don't need to store token or user here
         navigate("/login");
-      } else {
-        alert("Registration failed. Please try again.");
       }
     } catch (error) {
-      alert("Registration failed. Please try again.");
-      console.error("Registration failed", error);
+      const errorMessage =
+        error.response?.data?.message ||
+        "Registration failed. Please try again.";
+      toast.error(errorMessage);
+      console.error("Registration failed:", error);
+
+      // Show specific error messages for common cases
+      if (error.response?.status === 409) {
+        toast.error("Email already registered. Please use a different email.");
+      } else if (error.response?.status === 400) {
+        toast.error("Please check your input and try again.");
+      }
     } finally {
       setIsLoading(false);
     }

@@ -1,10 +1,7 @@
-import {} from "react";
+import { createContext, useState, useEffect, useContext } from "react";
 import api from "../api/api";
-import { createContext } from "react";
-import { useState } from "react";
-import { useEffect } from "react";
 
-const Authcontext = createContext();
+export const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem("token"));
@@ -73,7 +70,7 @@ export const AuthProvider = ({ children }) => {
   }, [token]);
 
   return (
-    <Authcontext.Provider
+    <AuthContext.Provider
       value={{
         user,
         setUser,
@@ -89,8 +86,8 @@ export const AuthProvider = ({ children }) => {
       }}
     >
       {children}
-    </Authcontext.Provider>
+    </AuthContext.Provider>
   );
 };
-export const UserAuth = () => useContext(Authcontext);
-export default Authcontext;
+export const UserAuth = () => useContext(AuthContext);
+export default AuthContext;

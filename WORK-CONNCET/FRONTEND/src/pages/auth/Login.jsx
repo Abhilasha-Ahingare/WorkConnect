@@ -1,36 +1,52 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { useNavigate, Link } from "react-router-dom"
-import { motion, AnimatePresence } from "framer-motion"
-import { UserAuth } from "../contexts/AuthContext"
-import api from "../api/api"
-import { toast } from "react-toastify"
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { motion, AnimatePresence } from "framer-motion";
+import { UserAuth } from "../../contexts/AuthContext";
+import api from "../../api/api";
+import { toast } from "react-toastify";
 
 const Login = () => {
-  const [Email, setEmail] = useState("")
-  const [Password, setPassword] = useState("")
-  const [isLoading, setIsLoading] = useState(false)
-  const { setUser, StoreToken } = UserAuth()
-  const navigate = useNavigate()
+  const [Email, setEmail] = useState("");
+  const [Password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { setUser, StoreToken } = UserAuth();
+  const navigate = useNavigate();
 
   const submitHandler = async (e) => {
-    e.preventDefault()
-    setIsLoading(true)
+    e.preventDefault();
+    setIsLoading(true);
     try {
-      const { data } = await api.post(`/users/login`, { Email, Password })
-      StoreToken(data.token)
-      setUser(data.user)
-      toast.success("Login successful!")
-      if (data.user.role === "admin") navigate("/get_admin")
-      else if (data.user.role === "organizer") navigate("/dashboard")
-      else navigate("/home")
+      const { data } = await api.post(`/users/login`, { Email, Password });
+      if (data.token && typeof StoreToken === "function") {
+        StoreToken(data.token);
+      } else {
+        localStorage.setItem("token", data.token); 
+      }
+      setUser(data.user);
+      toast.success("Login successful!");
+      // Update navigation paths based on user role
+      switch (data.user.role) {
+        case "admin":
+          navigate("/admin/dashboard"); 
+          break;
+        case "organizer":
+          navigate("/dashboard");
+          break;
+        default:
+          navigate("/dashboard"); 
+      }
     } catch (err) {
-      console.error("Login failed:", err)
+      console.error("Login failed:", err);
+      toast.error(
+        err.response?.data?.message ||
+          "Login failed. Please check your credentials."
+      );
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }
+  };
 
   // Animation variants
   const containerVariants = {
@@ -52,7 +68,7 @@ const Login = () => {
       scale: 0.8,
       transition: { duration: 0.3 },
     },
-  }
+  };
 
   const itemVariants = {
     hidden: { opacity: 0, y: 20 },
@@ -65,7 +81,7 @@ const Login = () => {
         stiffness: 100,
       },
     },
-  }
+  };
 
   const headerVariants = {
     hidden: { opacity: 0, y: -50, scale: 0.8 },
@@ -80,7 +96,7 @@ const Login = () => {
         damping: 10,
       },
     },
-  }
+  };
 
   const inputVariants = {
     focus: {
@@ -91,7 +107,7 @@ const Login = () => {
       scale: 1,
       transition: { duration: 0.2 },
     },
-  }
+  };
 
   const buttonVariants = {
     idle: { scale: 1 },
@@ -112,7 +128,7 @@ const Login = () => {
         ease: "easeInOut",
       },
     },
-  }
+  };
 
   const blobVariants = {
     animate: {
@@ -126,7 +142,7 @@ const Login = () => {
         ease: "linear",
       },
     },
-  }
+  };
 
   return (
     <motion.div
@@ -146,13 +162,23 @@ const Login = () => {
           className="absolute -bottom-40 -left-40 w-80 h-80 bg-yellow-300 rounded-full mix-blend-multiply filter blur-xl opacity-70"
           variants={blobVariants}
           animate="animate"
-          transition={{ delay: 2, duration: 25, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+          transition={{
+            delay: 2,
+            duration: 25,
+            repeat: Number.POSITIVE_INFINITY,
+            ease: "linear",
+          }}
         />
         <motion.div
           className="absolute top-40 left-40 w-80 h-80 bg-pink-300 rounded-full mix-blend-multiply filter blur-xl opacity-70"
           variants={blobVariants}
           animate="animate"
-          transition={{ delay: 4, duration: 30, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+          transition={{
+            delay: 4,
+            duration: 30,
+            repeat: Number.POSITIVE_INFINITY,
+            ease: "linear",
+          }}
         />
       </div>
 
@@ -292,9 +318,20 @@ const Login = () => {
                     fill="none"
                     viewBox="0 0 24 24"
                     animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Number.POSITIVE_INFINITY, ease: "linear" }}
+                    transition={{
+                      duration: 1,
+                      repeat: Number.POSITIVE_INFINITY,
+                      ease: "linear",
+                    }}
                   >
-                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                    <circle
+                      className="opacity-25"
+                      cx="12"
+                      cy="12"
+                      r="10"
+                      stroke="currentColor"
+                      strokeWidth="4"
+                    />
                     <path
                       className="opacity-75"
                       fill="currentColor"
@@ -325,7 +362,10 @@ const Login = () => {
         </div>
 
         {/* Footer */}
-        <motion.div className="mt-8 text-center text-sm text-gray-700" variants={itemVariants}>
+        <motion.div
+          className="mt-8 text-center text-sm text-gray-700"
+          variants={itemVariants}
+        >
           <motion.p
             className="mb-2"
             initial={{ opacity: 0 }}
@@ -356,14 +396,19 @@ const Login = () => {
                 whileHover={{ x: 5 }}
                 transition={{ duration: 0.2 }}
               >
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
               </motion.svg>
             </motion.span>
           </Link>
         </motion.div>
       </motion.form>
     </motion.div>
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

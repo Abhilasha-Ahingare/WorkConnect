@@ -1,8 +1,10 @@
-module.exports = {
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
     extend: {
       animation: {
-        fadeIn: "fadeIn 0.6s ease-in-out forwards",       // ← Added `forwards`
+        fadeIn: "fadeIn 0.6s ease-in-out forwards",
         slideInLeft: "slideInLeft 0.6s ease-in-out",
         slideInRight: "slideInRight 0.6s ease-in-out",
       },

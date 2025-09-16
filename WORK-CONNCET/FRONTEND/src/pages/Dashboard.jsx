@@ -11,7 +11,7 @@ const Dashboard = () => {
     totalClients: 0,
     totalTasks: 0,
     completedTasks: 0,
-    recentClients: []
+    recentClients: [],
   });
   const [loading, setLoading] = useState(true);
 
@@ -22,8 +22,8 @@ const Dashboard = () => {
   const loadDashboardData = async () => {
     try {
       const [clientsResponse, tasksResponse] = await Promise.all([
-        api.get('/clients/get-all-client'),
-        api.get('/task/get-all-task')
+        api.get("/clients/get-all-client"),
+        api.get("/task/get-all-task"), // This is correct as per server.js
       ]);
 
       const clients = clientsResponse.data.clients || [];
@@ -32,11 +32,11 @@ const Dashboard = () => {
       setStats({
         totalClients: clients.length,
         totalTasks: tasks.length,
-        completedTasks: tasks.filter(t => t.isCompleted).length,
-        recentClients: clients.slice(0, 5)
+        completedTasks: tasks.filter((t) => t.isCompleted).length,
+        recentClients: clients.slice(0, 5),
       });
     } catch (error) {
-      console.error('Failed to load dashboard data:', error);
+      console.error("Failed to load dashboard data:", error);
     } finally {
       setLoading(false);
     }
@@ -56,7 +56,9 @@ const Dashboard = () => {
       <div className="flex items-center justify-between">
         <div>
           <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>
-          <p className="text-gray-600 mt-1">Overview of your client management system</p>
+          <p className="text-gray-600 mt-1">
+            Overview of your client management system
+          </p>
         </div>
         <Link
           to="/create-task"
@@ -100,19 +102,21 @@ const Dashboard = () => {
         {/* Recent Clients */}
         <div className="lg:col-span-2 bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-800">Recent Clients</h3>
-            <Link 
+            <h3 className="text-lg font-semibold text-gray-800">
+              Recent Clients
+            </h3>
+            <Link
               to="/clients"
               className="text-blue-600 hover:text-blue-700 text-sm font-medium"
             >
               View All
             </Link>
           </div>
-          
+
           {stats.recentClients.length === 0 ? (
             <div className="text-center py-8 text-gray-500">
               <p>No clients yet</p>
-              <Link 
+              <Link
                 to="/clients"
                 className="text-blue-600 hover:text-blue-700 text-sm mt-2 inline-block"
               >
@@ -122,7 +126,7 @@ const Dashboard = () => {
           ) : (
             <div className="space-y-3">
               {stats.recentClients.map((client) => (
-                <div 
+                <div
                   key={client._id}
                   className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                 >
@@ -131,13 +135,15 @@ const Dashboard = () => {
                     <p className="text-sm text-gray-600">{client.email}</p>
                   </div>
                   <div className="text-right">
-                    <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-                      client.status === 'Lead' 
-                        ? 'bg-yellow-100 text-yellow-800'
-                        : client.status === 'In Progress'
-                          ? 'bg-blue-100 text-blue-800'
-                          : 'bg-green-100 text-green-800'
-                    }`}>
+                    <span
+                      className={`px-2 py-1 rounded-full text-xs font-medium ${
+                        client.status === "Lead"
+                          ? "bg-yellow-100 text-yellow-800"
+                          : client.status === "In Progress"
+                          ? "bg-blue-100 text-blue-800"
+                          : "bg-green-100 text-green-800"
+                      }`}
+                    >
                       {client.status}
                     </span>
                     <p className="text-xs text-gray-400 mt-1">
@@ -153,15 +159,17 @@ const Dashboard = () => {
         {/* Upcoming Reminders */}
         <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold text-gray-800">Upcoming Reminders</h3>
-            <Link 
+            <h3 className="text-lg font-semibold text-gray-800">
+              Upcoming Reminders
+            </h3>
+            <Link
               to="/tasks"
               className="text-blue-600 hover:text-blue-700 text-sm font-medium"
             >
               View All
             </Link>
           </div>
-          
+
           <div className="max-h-96 overflow-y-auto">
             <UpcomingReminders tasks={notifications} limit={6} />
           </div>

@@ -1,93 +1,69 @@
 import { createContext, useState, useEffect, useContext } from "react";
 import api from "../api/api";
 
-export const AuthContext = createContext();
+const AuthContext = createContext();
 
 export const AuthProvider = ({ children }) => {
   const [token, setToken] = useState(localStorage.getItem("token"));
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [client, setClients] = useState([]);
-  const [task, setTask] = useState([]);
 
-  const authorization = `Bearer ${token}`;
-  const isLogIn = !!token;
+  const isLoggedIn = !!token;
 
-  const StoreToken = (token) => {
-    setToken(token);
-    localStorage.setItem("token", token);
+  const login = (userData, userToken) => {
+    setUser(userData);
+    setToken(userToken);
+    localStorage.setItem("token", userToken);
   };
 
   const logout = () => {
-    setToken("");
-    setUser("");
-    setClients([]);
+    setUser(null);
+    setToken(null);
     localStorage.removeItem("token");
   };
 
-  const UserAuthentication = async () => {
-    try {
-      const response = await api.get(`/users/get-all-user`);
-      if (response.status === 200) {
-        setUser(response.data.users);
-      }
-    } catch (error) {
-      console.log("🚫 Error fetching user:", error);
-      setIsLoading(false);
-    }
-  };
-
-  const getAllClient = async () => {
-    try {
-      const response = await api.get(`/clients/get-all-client`);
-      if (response.status === 200) {
-        setClients(response.data.clients);
-      }
-    } catch (error) {
-      console.log("🚫 Error fetching client:", error);
-      setIsLoading(false);
-    }
-  };
-
-  const GetAllTask = async () => {
-    try {
-      const response = await api.get(`/task/get-all-task`);
-      if (response.status === 200) {
-        setTask(response.data.tasks);
-      }
-    } catch (error) {
-      console.log("🚫 Error fetching task:", error);
-    }
-  };
+  // Verify token on app start
   useEffect(() => {
-    if (token) {
-      UserAuthentication();
-      getAllClient();
-      GetAllTask();
-    } else {
-      logout();
-    }
+    const verifyToken = async () => {
+      if (token) {
+        try {
+          const response = await api.get('/users/get-all-user');
+          if (response.data?.users?.length > 0) {
+            // Find current user or use first user
+            setUser(response.data.users[0]);
+          }
+        } catch (error) {
+          console.error('Token verification failed:', error);
+          logout();
+        }
+      }
+      setIsLoading(false);
+    };
+
+    verifyToken();
   }, [token]);
 
   return (
-    <AuthContext.Provider
+    <AuthContext.Provider 
       value={{
         user,
-        setUser,
-        StoreToken,
-        authorization,
+        token,
+        isLoggedIn,
         isLoading,
+        login,
         logout,
-        isLogIn,
-        client,
-        task,
-        setTask,
-        setClients,
+        setUser
       }}
     >
       {children}
     </AuthContext.Provider>
   );
 };
-export const UserAuth = () => useContext(AuthContext);
-export default AuthContext;
+
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within AuthProvider');
+  }
+  return context;
+};

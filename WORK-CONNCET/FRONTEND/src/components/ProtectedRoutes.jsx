@@ -1,30 +1,22 @@
 import { Navigate } from "react-router-dom";
-import { UserAuth } from "../contexts/AuthContext";
+import { useAuth } from "../contexts/AuthContext";
 
+const ProtectedRoute = ({ children }) => {
+  const { isLoggedIn, isLoading } = useAuth();
 
-const ProtectRoutes = ({ children, role }) => {
-  const { user, isLoading, isLogIn } = UserAuth();
-
-  // ✅ Important: Wait until loading finishes
   if (isLoading) {
     return (
-      <div className="h-screen flex justify-center items-center">
-        <p className="text-xl font-semibold animate-pulse">Loading...</p>
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
       </div>
     );
   }
 
-  // ✅ Redirect if not logged in
-  if (!isLogIn || !user) {
-    return <Navigate to="/login" />;
-  }
-
-  // ✅ Check role match (if any)
-  if (role && !role.includes(user.role)) {
-    return <Navigate to="/login" />;
+  if (!isLoggedIn) {
+    return <Navigate to="/login" replace />;
   }
 
   return children;
 };
 
-export default ProtectRoutes;
+export default ProtectedRoute;

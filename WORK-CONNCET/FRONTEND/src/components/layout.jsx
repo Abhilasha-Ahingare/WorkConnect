@@ -1,16 +1,20 @@
-// src/components/Layout.jsx
 import React from "react";
-import Sidebar from "./SideBar";
+import Sidebar from "./Sidebar";
 import Navbar from "./Navbar";
 
-export default function Layout({ children }) {
+const Layout = ({ children }) => {
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen bg-gray-50">
       <Sidebar />
       <div className="ml-64">
         <Navbar />
-        <main className="pt-20 px-6 pb-8">{children}</main>
+        <main className="pt-20 px-6 pb-8 min-h-screen">
+          {children}
+        </main>
       </div>
     </div>
   );
-}
+};
+
+export default Layout;
+

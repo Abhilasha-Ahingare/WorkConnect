@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useNotifications } from "../contexts/NotificationContext";
 import StatsCard from "../components/StatsCard";
-import UpcomingReminders from "../components/UpcomingReminders";
+import UpcomingReminders from "../components/UpcomingReminder";
 import api from "../api/api";
 
 const Dashboard = () => {

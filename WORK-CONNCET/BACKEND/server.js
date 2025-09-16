@@ -8,6 +8,7 @@ const morgan = require("morgan");
 const clientRoutes = require("./Router/client.routes.js");
 const taskRoutes = require("./Router/reminder.route.js");
 const userRoutes = require("./Router/user.route.js");
+const dashboardRoutes = require("./Router/dashboard.route.js");
 
 const app = express();
 
@@ -30,6 +31,7 @@ app.use(morgan("dev"));
 app.use("/api/users", userRoutes);
 app.use("/api/clients", clientRoutes);
 app.use("/api/task", taskRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 // basic health
 app.get("/", (req, res) => res.json({ ok: true }));

@@ -7,10 +7,10 @@ const Sidebar = () => {
   const { logout } = useAuth();
 
   const menuItems = [
-    { to: "/dashboard", label: "Dashboard", icon: "🏠" },
-    { to: "/clients", label: "Clients", icon: "👥" },
-    { to: "/tasks", label: "Tasks", icon: "📋" },
-    { to: "/create-task", label: "Create Task", icon: "➕" }
+    { to: "dashboard", label: "Dashboard", icon: "🏠" },
+    { to: "clients", label: "Clients", icon: "👥" },
+    { to: "tasks", label: "Tasks", icon: "📋" },
+    { to: "create-task", label: "Create Task", icon: "➕" },
   ];
 
   return (
@@ -25,14 +25,14 @@ const Sidebar = () => {
 
         <nav className="space-y-2">
           {menuItems.map((item) => {
-            const isActive = location.pathname === item.to;
+            const isActive = location.pathname.startsWith(`/${item.to}`);
             return (
               <Link
                 key={item.to}
                 to={item.to}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg transition-all duration-200 ${
-                  isActive 
-                    ? "bg-blue-600 text-white shadow-lg" 
+                  isActive
+                    ? "bg-blue-600 text-white shadow-lg"
                     : "text-gray-300 hover:bg-gray-800 hover:text-white"
                 }`}
               >

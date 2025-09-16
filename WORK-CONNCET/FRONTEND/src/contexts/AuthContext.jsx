@@ -23,28 +23,35 @@ export const AuthProvider = ({ children }) => {
   };
 
   // Verify token on app start
-  useEffect(() => {
-    const verifyToken = async () => {
-      if (token) {
-        try {
-          const response = await api.get('/users/get-all-user');
-          if (response.data?.users?.length > 0) {
-            // Find current user or use first user
-            setUser(response.data.users[0]);
-          }
-        } catch (error) {
-          console.error('Token verification failed:', error);
-          logout();
-        }
-      }
-      setIsLoading(false);
-    };
+  // useEffect(() => {
+  //   const verifyToken = async () => {
+  //     if (!token) {
+  //       setIsLoading(false);
+  //       return;
+  //     }
 
-    verifyToken();
-  }, [token]);
+  //     try {
+  //       // Verify token and get user data
+  //       const response = await api.get("/users/profile");
+  //       if (response.data?.user) {
+  //         setUser(response.data.user);
+  //       } else {
+  //         throw new Error("User data not found");
+  //       }
+  //     } catch (error) {
+  //       console.error("Token verification failed:", error);
+  //       // Clear invalid token and user data
+  //       logout();
+  //     } finally {
+  //       setIsLoading(false);
+  //     }
+  //   };
+
+  //   verifyToken();
+  // }, [token]);
 
   return (
-    <AuthContext.Provider 
+    <AuthContext.Provider
       value={{
         user,
         token,
@@ -52,7 +59,7 @@ export const AuthProvider = ({ children }) => {
         isLoading,
         login,
         logout,
-        setUser
+        setUser,
       }}
     >
       {children}
@@ -63,7 +70,7 @@ export const AuthProvider = ({ children }) => {
 export const useAuth = () => {
   const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within AuthProvider');
+    throw new Error("useAuth must be used within AuthProvider");
   }
   return context;
 };

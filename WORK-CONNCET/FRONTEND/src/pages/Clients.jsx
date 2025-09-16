@@ -17,7 +17,7 @@ export default function Clients() {
       const params = {};
       if (search) params.search = search;
       if (statusFilter) params.status = statusFilter;
-      const res = await api.get("/clients/get-all-client", { params });
+      const res = await api.get("/get-all-client", { params });
       setClients(res.data.clients || []);
     } catch (err) {
       console.error("Error fetching clients:", err);

@@ -29,11 +29,12 @@ export default function App() {
           </ProtectedRoute>
         }
       >
-        <Route index element={<Navigate to="/dashboard" replace />} />
+        <Route index element={<Navigate to="dashboard" replace />} />
         <Route path="dashboard" element={<Dashboard />} />
         <Route path="clients" element={<Clients />} />
         <Route path="clients/:id" element={<ClientProfile />} />
-        <Route path="tasks" element={<Tasks />} />
+        <Route path="tasks" element={<Tasks
+         />} />
         <Route path="create-task" element={<CreateTask />} />
       </Route>
 

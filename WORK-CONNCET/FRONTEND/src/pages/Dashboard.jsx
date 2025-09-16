@@ -21,19 +21,15 @@ const Dashboard = () => {
 
   const loadDashboardData = async () => {
     try {
-      const [clientsResponse, tasksResponse] = await Promise.all([
-        api.get("/clients/get-all-client"),
-        api.get("/task/get-all-task"), // This is correct as per server.js
-      ]);
-
-      const clients = clientsResponse.data.clients || [];
-      const tasks = tasksResponse.data || [];
+      const response = await api.get("/dashboard/stats");
+      const dashboardData = response.data.data;
 
       setStats({
-        totalClients: clients.length,
-        totalTasks: tasks.length,
-        completedTasks: tasks.filter((t) => t.isCompleted).length,
-        recentClients: clients.slice(0, 5),
+        totalClients: dashboardData.totalClients,
+        totalTasks: dashboardData.totalTasks,
+        completedTasks: dashboardData.completedTasks,
+        recentClients: dashboardData.recentClients,
+        upcomingTasks: dashboardData.upcomingTasks,
       });
     } catch (error) {
       console.error("Failed to load dashboard data:", error);

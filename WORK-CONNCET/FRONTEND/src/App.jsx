@@ -17,34 +17,43 @@ export default function App() {
   const { user } = useAuth();
 
   return (
-    <Routes>
-      {/* Public Routes */}
-      <Route path="/login" element={<Login />} />
-      <Route path="/registration" element={<Register />} />
+    <>
+      <Routes>
+        {/* Public Routes */}
+        <Route path="/login" element={<Login />} />
+        <Route path="/registration" element={<Register />} />
 
-      {/* Protected Routes */}
-      <Route
-        path="/"
-        element={
-          // <ProtectedRoute>
+        {/* Protected Routes */}
+        <Route
+          path="/"
+          element={
+            // <ProtectedRoute>
             <Layout />
-          // </ProtectedRoute>
-        }
-      >
-        <Route index element={<Navigate to="/dashboard" replace />} />
-        <Route path="/dashboard" element={<Dashboard><MiniReminder /></Dashboard>} />
-        <Route path="/clients" element={<Clients />} />
-        <Route path="/clients/:id" element={<ClientProfile />} />
-        <Route path="/task" element={<Tasks
-         />} />
-        <Route path="/task/create-task" element={<CreateTaskModal />} />
-      </Route>
+            // </ProtectedRoute>
+          }
+        >
+          <Route index element={<Navigate to="/dashboard" replace />} />
+          <Route
+            path="/dashboard"
+            element={
+              <Dashboard>
+                <MiniReminder />
+              </Dashboard>
+            }
+          />
+          <Route path="/clients" element={<Clients />} />
+          <Route path="/clients/:id" element={<ClientProfile />} />
+          <Route path="/task" element={<Tasks />} />
+          <Route path="/task/create-task" element={<CreateTaskModal />} />
+        </Route>
 
-      {/* Fallback Route */}
-      <Route
-        path="*"
-        element={<Navigate to={user ? "/dashboard" : "/login"} replace />}
-      />
-    </Routes>
+        {/* Fallback Route */}
+        <Route
+          path="*"
+          element={<Navigate to={user ? "/dashboard" : "/login"} replace />}
+        />
+      </Routes>
+      {/* <MiniReminder /> */}
+    </>
   );
 }

@@ -305,7 +305,6 @@ import {toast} from "react-toastify"
                       Name *
                     </label>
                     <input
-                      required
                       value={form.name}
                       onChange={(e) => setForm({ ...form, name: e.target.value })}
                       placeholder="Client name"

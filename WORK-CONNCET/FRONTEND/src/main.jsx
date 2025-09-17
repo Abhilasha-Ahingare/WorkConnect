@@ -18,7 +18,7 @@ createRoot(document.getElementById("root")).render(
       <AuthProvider>
         <NotificationProvider>
           <App />
-          {/* <ToastContainer
+          <ToastContainer
             position="top-right"
             autoClose={2000}
             hideProgressBar={false}
@@ -32,9 +32,7 @@ createRoot(document.getElementById("root")).render(
             className="toast-container"
             toastClassName="toast-item"
             bodyClassName="toastBody"
-            // transition={Bounce}
-          />{" "} */}
-         
+          />
         </NotificationProvider>
       </AuthProvider>
     </BrowserRouter>

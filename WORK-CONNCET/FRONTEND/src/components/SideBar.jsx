@@ -16,6 +16,7 @@ const Sidebar = () => {
   const location = useLocation();
   const { logout } = useAuth();
 
+
   const menuItems = [
     { to: "/dashboard", label: "Dashboard", icon: <Home size={20} /> },
     { to: "/clients", label: "Clients", icon: <Users size={20} /> },

@@ -9,6 +9,8 @@ const taskSchema = new mongoose.Schema(
     isCompleted: { type: Boolean, default: false },
     isNotified: { type: Boolean, default: false },
     isRead: { type: Boolean, default: false },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }
+
   },
   { timestamps: true }
 );

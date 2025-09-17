@@ -5,7 +5,7 @@ const dayjs = require("dayjs");
 // Create a task/reminder
 const createTask = async (req, res) => {
   try {
-    const { title, description, assignedClients, reminderDate } = req.body;
+    const { title, description, assignedClients, reminderDate ,createdBy } = req.body;
     // Find clients by their email addresses
     const clients = await Client.find({ email: { $in: assignedClients } });
 
@@ -20,9 +20,10 @@ const createTask = async (req, res) => {
     const task = await Task.create({
       title,
       description,
-      assignedClients: clientIds, // Use the extracted client IDs
+      assignedClients: clientIds, 
       reminderDate: new Date(reminderDate),
       isNotified: false,
+      createdBy: req.user.id,
       isRead: false,
     });
     res.status(201).json({ message: "task created sucessfully", task });

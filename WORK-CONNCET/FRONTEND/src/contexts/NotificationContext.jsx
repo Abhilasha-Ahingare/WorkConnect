@@ -155,27 +155,28 @@ export const NotificationProvider = ({ children }) => {
   };
 
   const checkDueReminders = () => {
-    const now = dayjs();
-    
-    notifications.forEach((task) => {
-      if (task.isCompleted || task.isNotified) return;
-      
-      const taskTime = dayjs(task.reminderDate);
-      const diffMinutes = now.diff(taskTime, 'minute');
-      
-      // Show reminder if task time has passed (within 2 minutes to avoid spam)
-      if (diffMinutes >= 0 && diffMinutes <= 2) {
-        handleNewReminder(task);
-        
-        // Mark as notified to prevent duplicate notifications
-        setNotifications(prev => 
-          prev.map(n => 
-            n._id === task._id ? { ...n, isNotified: true } : n
-          )
-        );
-      }
-    });
-  };
+  const now = dayjs();
+
+  notifications.forEach((task) => {
+    if (task.isCompleted || task.isNotified) return;
+
+    const taskTime = dayjs(task.reminderDate);
+    const diffSeconds = taskTime.diff(now, "second");
+
+    // ✅ Trigger reminder 5 sec before task time
+    if (diffSeconds <= 5 && diffSeconds >= 0) {
+      handleNewReminder(task);
+
+      // Mark as notified
+      setNotifications((prev) =>
+        prev.map((n) =>
+          n._id === task._id ? { ...n, isNotified: true } : n
+        )
+      );
+    }
+  });
+};
+
 
   const handleNewReminder = (reminder) => {
     // Play notification sound

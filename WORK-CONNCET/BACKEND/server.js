@@ -51,7 +51,7 @@ app.set("io", io);
 app.set("onlineUsers", onlineUsers);
 
 io.on("connection", (socket) => {
-  console.log("socket connected:", socket.id);
+  // console.log("socket connected:", socket.id);
 
   // client should emit 'register' after login with userId
   socket.on("register", (userId) => {

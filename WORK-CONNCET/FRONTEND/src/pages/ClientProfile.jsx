@@ -1,9 +1,24 @@
+// ClientProfile.jsx
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import api from "../api/api";
 import dayjs from "dayjs";
+import { motion, AnimatePresence } from "framer-motion";
+import { 
+  ArrowLeft, 
+  Plus, 
+  Mail, 
+  Phone, 
+  Calendar, 
+  Clock, 
+  AlertCircle,
+  CheckCircle,
+  X,
+  User,
+  FileText
+} from "lucide-react";
 
-export default function ClientProfile() {
+ function ClientProfile() {
   const { id } = useParams();
   const navigate = useNavigate();
   const [client, setClient] = useState(null);
@@ -69,11 +84,11 @@ export default function ClientProfile() {
   const getStatusColor = (status) => {
     switch (status) {
       case 'Lead':
-        return 'bg-yellow-100 text-yellow-800 border-yellow-200';
+        return 'bg-amber-100 text-amber-800 border-amber-200';
       case 'In Progress':
         return 'bg-blue-100 text-blue-800 border-blue-200';
       case 'Converted':
-        return 'bg-green-100 text-green-800 border-green-200';
+        return 'bg-emerald-100 text-emerald-800 border-emerald-200';
       default:
         return 'bg-gray-100 text-gray-800 border-gray-200';
     }
@@ -85,19 +100,23 @@ export default function ClientProfile() {
     const diffMinutes = taskTime.diff(now, 'minute');
     
     if (now.isAfter(taskTime)) {
-      return { label: 'Overdue', color: 'bg-red-100 text-red-800 border-red-200' };
+      return { label: 'Overdue', color: 'bg-red-100 text-red-800 border-red-200', icon: <AlertCircle size={14} /> };
     } else if (diffMinutes <= 60) {
-      return { label: 'Urgent', color: 'bg-yellow-100 text-yellow-800 border-yellow-200' };
+      return { label: 'Urgent', color: 'bg-amber-100 text-amber-800 border-amber-200', icon: <Clock size={14} /> };
     } else if (diffMinutes <= 1440) { // 24 hours
-      return { label: 'Today', color: 'bg-blue-100 text-blue-800 border-blue-200' };
+      return { label: 'Today', color: 'bg-blue-100 text-blue-800 border-blue-200', icon: <Calendar size={14} /> };
     }
-    return { label: 'Upcoming', color: 'bg-gray-100 text-gray-800 border-gray-200' };
+    return { label: 'Upcoming', color: 'bg-gray-100 text-gray-800 border-gray-200', icon: <Clock size={14} /> };
   };
 
   if (loading) {
     return (
       <div className="flex items-center justify-center min-h-[400px]">
-        <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
+        <motion.div 
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          className="rounded-full h-12 w-12 border-b-2 border-indigo-600"
+        ></motion.div>
       </div>
     );
   }
@@ -110,7 +129,7 @@ export default function ClientProfile() {
         <p className="text-gray-600 mb-6">The client you're looking for doesn't exist.</p>
         <button
           onClick={() => navigate('/clients')}
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+          className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
         >
           Back to Clients
         </button>
@@ -119,47 +138,68 @@ export default function ClientProfile() {
   }
 
   return (
-    <div className="space-y-6">
+    <motion.div 
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.4 }}
+      className="space-y-6"
+    >
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <button
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
             onClick={() => navigate('/clients')}
-            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors flex items-center gap-2 text-gray-600"
             title="Back to Clients"
           >
-            ← Back
-          </button>
+            <ArrowLeft size={20} />
+            Back
+          </motion.button>
           <div>
             <h1 className="text-3xl font-bold text-gray-800">{client.name}</h1>
             <p className="text-gray-600 mt-1">Client Profile & Tasks</p>
           </div>
         </div>
-        <button
+        <motion.button
+          whileHover={{ scale: 1.05 }}
+          whileTap={{ scale: 0.95 }}
           onClick={() => setShowCreateTask(true)}
-          className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors flex items-center gap-2 font-medium"
+          className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-2 rounded-lg hover:shadow-md transition-all flex items-center gap-2 font-medium"
         >
-          <span className="text-lg">+</span>
+          <Plus size={20} />
           Create Task
-        </button>
+        </motion.button>
       </div>
 
       {/* Client Info Card */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.1 }}
+        className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
+      >
         <div className="flex items-start justify-between">
           <div className="flex-1">
-            <h2 className="text-xl font-semibold text-gray-800 mb-4">Client Information</h2>
+            <h2 className="text-xl font-semibold text-gray-800 mb-6 flex items-center gap-2">
+              <User size={24} className="text-indigo-600" />
+              Client Information
+            </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Name</label>
                 <p className="text-gray-900 font-medium">{client.name}</p>
               </div>
               
               {client.email && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                    <Mail size={16} />
+                    Email
+                  </label>
                   <p className="text-gray-900">
-                    <a href={`mailto:${client.email}`} className="text-blue-600 hover:text-blue-700">
+                    <a href={`mailto:${client.email}`} className="text-indigo-600 hover:text-indigo-700">
                       {client.email}
                     </a>
                   </p>
@@ -168,9 +208,12 @@ export default function ClientProfile() {
               
               {client.phone && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                    <Phone size={16} />
+                    Phone
+                  </label>
                   <p className="text-gray-900">
-                    <a href={`tel:${client.phone}`} className="text-blue-600 hover:text-blue-700">
+                    <a href={`tel:${client.phone}`} className="text-indigo-600 hover:text-indigo-700">
                       {client.phone}
                     </a>
                   </p>
@@ -178,34 +221,49 @@ export default function ClientProfile() {
               )}
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Status</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2">Status</label>
                 <span className={`inline-flex px-3 py-1 rounded-full text-sm font-medium border ${getStatusColor(client.status)}`}>
                   {client.status}
                 </span>
               </div>
               
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Client Since</label>
+                <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center gap-2">
+                  <Calendar size={16} />
+                  Client Since
+                </label>
                 <p className="text-gray-900">{dayjs(client.createdAt).format('MMM DD, YYYY')}</p>
               </div>
             </div>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       {/* Tasks Section */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
+      <motion.div 
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 0.2 }}
+        className="bg-white rounded-xl shadow-sm border border-gray-100 p-6"
+      >
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-xl font-semibold text-gray-800">
+          <h2 className="text-xl font-semibold text-gray-800 flex items-center gap-2">
+            <FileText size={24} className="text-indigo-600" />
             Tasks & Reminders ({tasks.length})
           </h2>
-          <div className="flex items-center gap-2 text-sm text-gray-600">
-            <span className="w-3 h-3 bg-red-200 rounded-full"></span>
-            <span>Overdue</span>
-            <span className="w-3 h-3 bg-yellow-200 rounded-full ml-4"></span>
-            <span>Urgent</span>
-            <span className="w-3 h-3 bg-blue-200 rounded-full ml-4"></span>
-            <span>Today</span>
+          <div className="flex items-center gap-4 text-sm text-gray-600">
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 bg-red-400 rounded-full"></div>
+              <span>Overdue</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 bg-amber-400 rounded-full"></div>
+              <span>Urgent</span>
+            </div>
+            <div className="flex items-center gap-1">
+              <div className="w-3 h-3 bg-blue-400 rounded-full"></div>
+              <span>Today</span>
+            </div>
           </div>
         </div>
 
@@ -214,24 +272,32 @@ export default function ClientProfile() {
             <div className="text-4xl mb-4">📋</div>
             <h3 className="text-lg font-semibold text-gray-800 mb-2">No tasks yet</h3>
             <p className="text-gray-600 mb-6">Create your first task or reminder for this client</p>
-            <button
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               onClick={() => setShowCreateTask(true)}
-              className="bg-blue-600 text-white px-6 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              className="bg-indigo-600 text-white px-6 py-2 rounded-lg hover:bg-indigo-700 transition-colors"
             >
               Create Task
-            </button>
+            </motion.button>
           </div>
         ) : (
           <div className="space-y-4">
             {tasks.map((task) => {
               const priority = getTaskPriority(task.reminderDate);
               return (
-                <div key={task._id} className="border border-gray-200 rounded-lg p-4 hover:bg-gray-50 transition-colors">
+                <motion.div 
+                  key={task._id} 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="border border-gray-200 rounded-xl p-4 hover:bg-gray-50 transition-colors"
+                >
                   <div className="flex items-start justify-between">
                     <div className="flex-1">
                       <div className="flex items-center gap-3 mb-2">
                         <h4 className="font-semibold text-gray-800">{task.title}</h4>
-                        <span className={`px-2 py-1 rounded-full text-xs font-medium border ${priority.color}`}>
+                        <span className={`px-2 py-1 rounded-full text-xs font-medium border ${priority.color} flex items-center gap-1`}>
+                          {priority.icon}
                           {priority.label}
                         </span>
                         {!task.isRead && (
@@ -245,101 +311,125 @@ export default function ClientProfile() {
                       
                       <div className="flex items-center gap-4 text-sm text-gray-500">
                         <span className="flex items-center gap-1">
-                          📅 {dayjs(task.reminderDate).format('MMM DD, YYYY')}
+                          <Calendar size={14} />
+                          {dayjs(task.reminderDate).format('MMM DD, YYYY')}
                         </span>
                         <span className="flex items-center gap-1">
-                          🕒 {dayjs(task.reminderDate).format('hh:mm A')}
+                          <Clock size={14} />
+                          {dayjs(task.reminderDate).format('hh:mm A')}
                         </span>
                         <span className="flex items-center gap-1">
-                          {task.isCompleted ? '✅ Completed' : '⏳ Pending'}
+                          {task.isCompleted ? 
+                            <><CheckCircle size={14} className="text-emerald-500" /> Completed</> : 
+                            <><Clock size={14} className="text-amber-500" /> Pending</>
+                          }
                         </span>
                       </div>
                     </div>
                   </div>
-                </div>
+                </motion.div>
               );
             })}
           </div>
         )}
-      </div>
+      </motion.div>
 
       {/* Create Task Modal */}
-      {showCreateTask && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white rounded-lg shadow-xl max-w-md w-full">
-            <div className="p-6">
-              <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-semibold text-gray-800">
-                  Create Task for {client.name}
-                </h3>
-                <button
-                  onClick={() => setShowCreateTask(false)}
-                  className="text-gray-400 hover:text-gray-600 text-xl"
-                >
-                  ×
-                </button>
-              </div>
-
-              <form onSubmit={handleCreateTask} className="space-y-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Task Title *
-                  </label>
-                  <input
-                    required
-                    value={taskForm.title}
-                    onChange={(e) => setTaskForm({ ...taskForm, title: e.target.value })}
-                    placeholder="Enter task title"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Description
-                  </label>
-                  <textarea
-                    value={taskForm.description}
-                    onChange={(e) => setTaskForm({ ...taskForm, description: e.target.value })}
-                    placeholder="Enter task description"
-                    rows="3"
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Reminder Date & Time *
-                  </label>
-                  <input
-                    type="datetime-local"
-                    required
-                    value={taskForm.reminderDate}
-                    onChange={(e) => setTaskForm({ ...taskForm, reminderDate: e.target.value })}
-                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                </div>
-
-                <div className="flex gap-3 pt-4">
+      <AnimatePresence>
+        {showCreateTask && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4"
+          >
+            <motion.div 
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              transition={{ type: "spring", damping: 20, stiffness: 300 }}
+              className="bg-white rounded-xl shadow-xl max-w-md w-full"
+            >
+              <div className="p-6">
+                <div className="flex items-center justify-between mb-6">
+                  <h3 className="text-lg font-semibold text-gray-800">
+                    Create Task for {client.name}
+                  </h3>
                   <button
-                    type="button"
                     onClick={() => setShowCreateTask(false)}
-                    className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors"
+                    className="text-gray-400 hover:text-gray-600 transition-colors"
                   >
-                    Cancel
-                  </button>
-                  <button
-                    type="submit"
-                    className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                  >
-                    Create Task
+                    <X size={24} />
                   </button>
                 </div>
-              </form>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+
+                <form onSubmit={handleCreateTask} className="space-y-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Task Title *
+                    </label>
+                    <input
+                      required
+                      value={taskForm.title}
+                      onChange={(e) => setTaskForm({ ...taskForm, title: e.target.value })}
+                      placeholder="Enter task title"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Description
+                    </label>
+                    <textarea
+                      value={taskForm.description}
+                      onChange={(e) => setTaskForm({ ...taskForm, description: e.target.value })}
+                      placeholder="Enter task description"
+                      rows="3"
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Reminder Date & Time *
+                    </label>
+                    <input
+                      type="datetime-local"
+                      required
+                      value={taskForm.reminderDate}
+                      onChange={(e) => setTaskForm({ ...taskForm, reminderDate: e.target.value })}
+                      className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-colors"
+                    />
+                  </div>
+
+                  <div className="flex gap-3 pt-4">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      type="button"
+                      onClick={() => setShowCreateTask(false)}
+                      className="flex-1 px-4 py-2 border border-gray-300 text-gray-700 rounded-lg hover:bg-gray-50 transition-colors font-medium"
+                    >
+                      Cancel
+                    </motion.button>
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      type="submit"
+                      className="flex-1 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-lg hover:shadow-md transition-all font-medium"
+                    >
+                      Create Task
+                    </motion.button>
+                  </div>
+                </form>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
   );
 }
+
+export default ClientProfile;

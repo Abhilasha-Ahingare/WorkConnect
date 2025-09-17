@@ -71,4 +71,35 @@ const getTasks = async (req, res) => {
   res.json(tasks);
 };
 
-module.exports = { createTask, markAsRead, getUpcoming, getTasks };
+
+// Add these new controller functions
+const updateTask = async (req, res) => {
+  try {
+    const task = await Task.findByIdAndUpdate(
+      req.params.id,
+      req.body,
+      { new: true }
+    ).populate("assignedClients");
+    
+    if (!task) return res.status(404).json({ message: "Task not found" });
+    
+    res.json(task);
+  } catch (error) {
+    res.status(400).json({ message: "Error updating task", error });
+  }
+};
+
+const deleteTask = async (req, res) => {
+  try {
+    const task = await Task.findByIdAndDelete(req.params.id);
+    
+    if (!task) return res.status(404).json({ message: "Task not found" });
+    
+    res.json({ message: "Task deleted successfully" });
+  } catch (error) {
+    res.status(400).json({ message: "Error deleting task", error });
+  }
+};
+
+// Update the export
+module.exports = { createTask, markAsRead, getUpcoming, getTasks, updateTask, deleteTask };

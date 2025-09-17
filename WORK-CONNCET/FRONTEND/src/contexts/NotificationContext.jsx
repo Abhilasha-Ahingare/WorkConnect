@@ -1,4 +1,5 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
+// NotificationContext.jsx (updated with fixes)
+import React, { createContext, useContext, useEffect, useState, useRef } from "react";
 import { io } from "socket.io-client";
 import api from "../api/api";
 import dayjs from "dayjs";
@@ -21,6 +22,31 @@ export const NotificationProvider = ({ children }) => {
   const [socket, setSocket] = useState(null);
   const [isConnecting, setIsConnecting] = useState(false);
   const [connectionError, setConnectionError] = useState(null);
+  const [newNotification, setNewNotification] = useState(null);
+  const [audioEnabled, setAudioEnabled] = useState(false);
+  const audioRef = useRef(null);
+  const timeoutRef = useRef(null);
+
+  // Enable audio on user interaction
+  useEffect(() => {
+    const enableAudio = () => {
+      setAudioEnabled(true);
+      document.removeEventListener('click', enableAudio);
+    };
+    
+    document.addEventListener('click', enableAudio);
+    
+    return () => {
+      document.removeEventListener('click', enableAudio);
+    };
+  }, []);
+
+  // Initialize audio only once
+  useEffect(() => {
+    audioRef.current = new Audio("https://audio-previews.elements.envatousercontent.com/files/472198703/preview.mp3");
+    audioRef.current.volume = 0.3;
+    audioRef.current.load();
+  }, []);
 
   // Load initial notifications
   useEffect(() => {
@@ -49,18 +75,12 @@ export const NotificationProvider = ({ children }) => {
   useEffect(() => {
     const socketURL =
       import.meta.env.VITE_SOCKET_URL || "http://localhost:5000";
-    let retryCount = 0;
-    const maxRetries = 3;
-
+    
     const connectSocket = () => {
-      if (retryCount >= maxRetries) {
-        console.warn("Max WebSocket connection retries reached");
-        return;
-      }
-
       const newSocket = io(socketURL, {
         transports: ["websocket", "polling"],
-        reconnectionAttempts: 3,
+        reconnection: true,
+        reconnectionAttempts: 5,
         reconnectionDelay: 1000,
         timeout: 10000,
       });
@@ -71,18 +91,52 @@ export const NotificationProvider = ({ children }) => {
         setConnectionError(null);
         const token = localStorage.getItem("token");
         if (token) {
-          newSocket.emit("register", "user-id"); // You can extract user ID from token
+          newSocket.emit("register", "user-id");
         }
       });
 
       newSocket.on("connect_error", (error) => {
         console.error("Socket connection error:", error);
         setConnectionError("Failed to connect to notification service");
-        retryCount++;
-        setTimeout(connectSocket, 2000); // Retry after 2 seconds
+        setIsConnecting(false);
+      });
+
+      newSocket.on("disconnect", (reason) => {
+        console.log("Socket disconnected:", reason);
+        if (reason === "io server disconnect") {
+          // The server has disconnected, need to manually reconnect
+          newSocket.connect();
+        }
       });
 
       newSocket.on("new-reminder", (reminder) => {
+        console.log("New reminder received:", reminder);
+        
+        // Play notification sound if audio is enabled
+        if (audioEnabled && audioRef.current) {
+          try {
+            audioRef.current.currentTime = 0;
+            audioRef.current.play().catch(e => {
+              console.log("Audio play failed:", e);
+            });
+          } catch (error) {
+            console.error("Error playing audio:", error);
+          }
+        }
+        
+        // Show the mini reminder
+        setNewNotification(reminder);
+        
+        // Clear any existing timeout
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
+        
+        // Auto hide after 5 seconds
+        timeoutRef.current = setTimeout(() => {
+          setNewNotification(null);
+        }, 5000);
+
         setNotifications((prev) => {
           const updated = [reminder, ...prev].sort(
             (a, b) => new Date(a.reminderDate) - new Date(b.reminderDate)
@@ -93,13 +147,16 @@ export const NotificationProvider = ({ children }) => {
       });
 
       setSocket(newSocket);
+      setIsConnecting(true);
 
       return () => {
+        if (timeoutRef.current) {
+          clearTimeout(timeoutRef.current);
+        }
         newSocket.disconnect();
       };
     };
 
-    setIsConnecting(true);
     connectSocket();
 
     return () => {
@@ -107,7 +164,7 @@ export const NotificationProvider = ({ children }) => {
         socket.disconnect();
       }
     };
-  }, []);
+  }, [audioEnabled]); // Add audioEnabled as dependency
 
   const updateUnreadCount = (notificationsList) => {
     const count = notificationsList.filter((n) => !n.isRead).length;
@@ -145,6 +202,13 @@ export const NotificationProvider = ({ children }) => {
     });
   };
 
+  const dismissMiniReminder = () => {
+    setNewNotification(null);
+    if (timeoutRef.current) {
+      clearTimeout(timeoutRef.current);
+    }
+  };
+
   return (
     <NotificationContext.Provider
       value={{
@@ -153,6 +217,11 @@ export const NotificationProvider = ({ children }) => {
         markAsRead,
         addLocalNotification,
         socket,
+        isConnecting,
+        connectionError,
+        newNotification,
+        dismissMiniReminder,
+        audioEnabled
       }}
     >
       {children}

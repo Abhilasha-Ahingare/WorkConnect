@@ -6,7 +6,7 @@ import "./index.css";
 import "react-toastify/dist/ReactToastify.css";
 
 import { BrowserRouter } from "react-router-dom";
-import { NotificationProvider } from "./contexts/NotificationContext.jsx";
+import  {NotificationProvider } from "./contexts/NotificationContext.jsx";
 import { AuthProvider } from "./contexts/AuthContext";
 import { ToastContainer } from "react-toastify";
 
@@ -32,9 +32,9 @@ createRoot(document.getElementById("root")).render(
             className="toast-container"
             toastClassName="toast-item"
             bodyClassName="toastBody"
-            transition={Bounce}
-          />{" "}
-          */}
+            // transition={Bounce}
+          />{" "} */}
+         
         </NotificationProvider>
       </AuthProvider>
     </BrowserRouter>

@@ -6,10 +6,12 @@ import Dashboard from "./pages/Dashboard";
 import Clients from "./pages/Clients";
 import ClientProfile from "./pages/ClientProfile";
 import Tasks from "./pages/Tasks";
-import CreateTask from "./pages/CreateTask";
+// import CreateTask from "./pages/CreateTask";
 import Layout from "./components/layout";
-import ProtectedRoute from "./components/ProtectedRoutes";
+// import ProtectedRoute from "./components/ProtectedRoutes";
 import { useAuth } from "./contexts/AuthContext";
+import CreateTaskModal from "./pages/CreateTask";
+import MiniReminder from "./components/MiniReminder";
 
 export default function App() {
   const { user } = useAuth();
@@ -18,24 +20,24 @@ export default function App() {
     <Routes>
       {/* Public Routes */}
       <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
+      <Route path="/registration" element={<Register />} />
 
       {/* Protected Routes */}
       <Route
         path="/"
         element={
-          <ProtectedRoute>
+          // <ProtectedRoute>
             <Layout />
-          </ProtectedRoute>
+          // </ProtectedRoute>
         }
       >
-        <Route index element={<Navigate to="dashboard" replace />} />
-        <Route path="dashboard" element={<Dashboard />} />
-        <Route path="clients" element={<Clients />} />
-        <Route path="clients/:id" element={<ClientProfile />} />
-        <Route path="tasks" element={<Tasks
+        <Route index element={<Navigate to="/dashboard" replace />} />
+        <Route path="/dashboard" element={<Dashboard><MiniReminder /></Dashboard>} />
+        <Route path="/clients" element={<Clients />} />
+        <Route path="/clients/:id" element={<ClientProfile />} />
+        <Route path="/task" element={<Tasks
          />} />
-        <Route path="create-task" element={<CreateTask />} />
+        <Route path="/task/create-task" element={<CreateTaskModal />} />
       </Route>
 
       {/* Fallback Route */}
